@@ -18,6 +18,7 @@
 //	or data processing operations.
 void Main()
 {
+	#region Get Artist (GetArtist)
 	//	Pass
 	TestGetArtist(1).Dump("Pass - Valid ID");
 	TestGetArtist(1000).Dump("Pass - Valid ID - No artist found");
@@ -25,6 +26,17 @@ void Main()
 	//	Fail
 	//	Rule:	artistID must be valid
 	TestGetArtist(0).Dump("Fail - ArtistID must be Valid");
+	#endregion
+
+	#region Get Artists (GetArtists)
+	//	Pass
+	TestGetArtists("ABB").Dump("Pass - Valid artist name");
+	TestGetArtists("ABC").Dump("Pass - Valid name- No artists found");
+
+	//	Fail
+	//	Rule:	artistID must be valid
+	TestGetArtists(string.Empty).Dump("Fail - Artist name was empty");
+	#endregion
 }
 
 //	This region contains methods used for testing the functionality
@@ -35,6 +47,32 @@ public ArtistEditView TestGetArtist(int artistID)
 	try
 	{
 		return GetArtist(artistID);
+	}
+	#region catch all exceptions (define later)
+	catch (AggregateException ex)
+	{
+		foreach (var error in ex.InnerExceptions)
+		{
+			error.Message.Dump();
+		}
+	}
+	catch (ArgumentNullException ex)
+	{
+		GetInnerException(ex).Message.Dump();
+	}
+	catch (Exception ex)
+	{
+		GetInnerException(ex).Message.Dump();
+	}
+	#endregion
+	return null;  //  Ensures a valid return value even on failure
+}
+
+public List<ArtistEditView> TestGetArtists(string artistName)
+{
+	try
+	{
+		return GetArtists(artistName);
 	}
 	#region catch all exceptions (define later)
 	catch (AggregateException ex)
@@ -96,6 +134,33 @@ public ArtistEditView GetArtist(int artistID)
 
 			}).FirstOrDefault();
 
+}
+
+public List<ArtistEditView> GetArtists(string artistName)
+{
+	#region Business Logic and Parameter Exceptiions
+	//	create a list<Exception> to contain all discovered errors
+	List<Exception> errorList = new List<Exception>();
+
+	//  Business Rules
+	//	These are processing rules that need to be satisfied
+	//		for valid data
+	//		Rule:	artist name is required
+
+	if (string.IsNullOrWhiteSpace(artistName))
+	{
+		throw new ArgumentNullException("Artist name is required");
+	}
+	#endregion
+
+	return Artists
+			.Where(x => x.Name.ToUpper().Contains(artistName.ToUpper()))
+			.Select(x => new ArtistEditView
+			{
+				ArtistID = x.ArtistId,
+				Name = x.Name
+
+			}).ToList();
 }
 #endregion
 
