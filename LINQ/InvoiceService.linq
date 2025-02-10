@@ -201,7 +201,8 @@ public InvoiceView AddEditInvoice(InvoiceView invoiceView)
 	{
 		foreach (var partName in duplicatedParts)
 		{
-			errorList.Add(new Exception($"Part {partName} can only be added to the invoice lines once."));
+			errorList.Add(new Exception($"Part {partName} can only be added to " +
+			"the invoice lines once."));
 		}
 	}
 	#endregion
@@ -216,18 +217,14 @@ public InvoiceView AddEditInvoice(InvoiceView invoiceView)
 		invoice = new Invoice();
 		invoice.InvoiceDate = DateOnly.FromDateTime(DateTime.Now); // Set the current date for new invoices.
 	}
-	else
-	{
-		// Update the date for existing invoices.
-		invoice.InvoiceDate = invoiceView.InvoiceDate;
-	}
+
 	// Map attributes from the view model to the data model.
 	invoice.CustomerID = invoiceView.CustomerID;
 	invoice.EmployeeID = invoiceView.EmployeeID;
-	//  reset the subtotal & total as this will be updated from the invoice lines.
+	invoice.RemoveFromViewFlag = invoiceView.RemoveFromViewFlag;
+	//  reset the subtotal & tax as this will be updated from the invoice lines.
 	invoice.SubTotal = 0;
 	invoice.Tax = 0;
-	invoice.RemoveFromViewFlag = invoiceView.RemoveFromViewFlag;
 
 	// Process each line item in the provided view model.
 	foreach (var invoiceLineView in invoiceView.InvoiceLines)
