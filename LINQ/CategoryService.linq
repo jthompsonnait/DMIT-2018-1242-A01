@@ -1,6 +1,6 @@
 <Query Kind="Program">
   <Connection>
-    <ID>0a06d005-fd18-42d6-89d3-79eb231c2633</ID>
+    <ID>7f0f7433-55fe-4c62-86bb-a13560bd21fb</ID>
     <NamingServiceVersion>2</NamingServiceVersion>
     <Persist>true</Persist>
     <Driver Assembly="(internal)" PublicKeyToken="no-strong-name">LINQPad.Drivers.EFCore.DynamicDriver</Driver>
@@ -87,8 +87,61 @@ void Main()
 	//  Fail
 	//  rule:	category cannot be duplicated (found more than once)
 	TestAddEditCategory(categoryView).Dump($"Fail - Category {categoryName} already exist");
+	#endregion
 
+	#region Edit Category
+	//  Header information
+	Console.WriteLine("==================");
+	Console.WriteLine("=====  Edit Existing Category  =====");
+	Console.WriteLine("==================");
 
+	//  get last 5 records from the category table 
+	//	before editing existing category record
+	Categories.Skip(Categories.Count() - 5)
+					.Dump("Return last 5 records before editing existing category");
+
+	//  get existing category using categoryname placeholder
+	string previousCategoryName = categoryName;
+	categoryView = GetCategory(categoryName);
+
+	//  validate that the category view is the one that we want.
+	categoryView.Dump($"Valid category has category name of {categoryName}");
+
+	//  Pass
+	Console.WriteLine("==================");
+	Console.WriteLine("=====  Edit Category Pass =====");
+	Console.WriteLine("==================");
+
+	//  update category name with a 10 character name
+	categoryName = GenerateName(10);
+	categoryView.CategoryName = categoryName;
+
+	//  soft delete
+	//	categoryView.RemoveFromViewFlag = true;
+	TestAddEditCategory(categoryView)
+			.Dump($"Pass - Category name has been updated from {previousCategoryName} to {categoryName}");
+
+	//  get last 5 records from the category table 
+	//	after editing existing category record
+	Categories.Skip(Categories.Count() - 5).Dump("Return last 5 records after editing existing category");
+	#endregion
+
+	#region Soft Delete
+	//  Header information
+	Console.WriteLine("==================");
+	Console.WriteLine("=====  Soft Delete =====");
+	Console.WriteLine("==================");
+
+	//  get existing category using categoryname placeholder
+	categoryView = GetCategory(categoryName);
+	//  set remove from view flag to true
+	categoryView.RemoveFromViewFlag = true;
+
+	TestAddEditCategory(categoryView).Dump("Pass - Remove from view flag has been updated");
+
+	//  get last 5 records from the category table 
+	//	after editing existing category record
+	Categories.Skip(Categories.Count() - 5).Dump("Return last 5 records after updating remove from view flag");
 	#endregion
 
 }
