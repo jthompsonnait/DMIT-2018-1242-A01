@@ -17,4 +17,9 @@
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <ProjectReference Include="..\HogWildSystem\HogWildSystem.csproj" />
+  </ItemGroup>
+
 </Project>
