@@ -12,4 +12,5 @@ namespace HogWildSystem.ViewModels
         public DateTime AsOfDate { get; set; }
         public string Comments { get; set; }
     }
+
 }
