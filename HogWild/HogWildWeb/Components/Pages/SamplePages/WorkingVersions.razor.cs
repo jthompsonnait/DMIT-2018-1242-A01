@@ -21,7 +21,7 @@ namespace HogWildWeb.Components.Pages.SamplePages
         #endregion
 
         #region Methods
-        private void GetWoringVersions()
+        private void GetWorkingVersion()
         {
             try
             {
@@ -45,11 +45,12 @@ namespace HogWildWeb.Components.Pages.SamplePages
             }
             #endregion
         }
-        public Exception GetInnerException(System.Exception ex)
+        private Exception GetInnerException(System.Exception ex)
         {
             while (ex.InnerException != null)
                 ex = ex.InnerException;
             return ex;
         }
+        #endregion
     }
 }
