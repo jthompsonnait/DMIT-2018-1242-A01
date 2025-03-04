@@ -37,6 +37,16 @@ namespace HogWildSystem
                 //   passing the HogWildContext instance as a parameter.
                 return new WorkingVersionsService(context);
             });
+
+            services.AddTransient<CustomerService>((ServiceProvider) =>
+            {
+                //  Retrieve an instance of HogWildContext from the service provider.
+                var context = ServiceProvider.GetService<HogWildContext>();
+
+                // Create a new instance of WorkingVersionsService,
+                //   passing the HogWildContext instance as a parameter.
+                return new CustomerService(context);
+            });
         }
     }
 }
