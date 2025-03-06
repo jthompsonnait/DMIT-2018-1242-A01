@@ -74,8 +74,8 @@
             <PropertyColumn Property="x => x.City" Title="City" />
             <PropertyColumn Property="x => x.Phone" Title="Phone" />
             <PropertyColumn Property="x => x.Email" Title="Email" />
-            <PropertyColumn Property="@(x => x.TotalSales != 0
-                                                ? x.TotalSales.ToString()
+            <PropertyColumn Property="@(x => x.TotalSales.HasValue
+                                                ? x.TotalSales.Value.ToString("C2")
                                                 : string.Empty)"
                             Title="Total Sales" />
         </Columns>
