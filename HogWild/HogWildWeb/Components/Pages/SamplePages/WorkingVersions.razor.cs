@@ -27,29 +27,11 @@ namespace HogWildWeb.Components.Pages.SamplePages
             {
                 workingVersionView = WorkingVersionService.GetWorkingVersion();
             }
-            #region catch all exceptions
-            catch (AggregateException ex)
-            {
-                foreach (var error in ex.InnerExceptions)
-                {
-                    feedback = error.Message;
-                }
-            }
-            catch (ArgumentNullException ex)
-            {
-                feedback = GetInnerException(ex).Message;
-            }
             catch (Exception ex)
             {
-                feedback = GetInnerException(ex).Message;
+                // capture any exception message for display
+                feedback = ex.Message;
             }
-            #endregion
-        }
-        private Exception GetInnerException(System.Exception ex)
-        {
-            while (ex.InnerException != null)
-                ex = ex.InnerException;
-            return ex;
         }
         #endregion
     }
