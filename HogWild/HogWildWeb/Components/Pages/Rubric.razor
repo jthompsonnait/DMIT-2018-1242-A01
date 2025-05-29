@@ -1,0 +1,115 @@
+﻿@page "/Rubric"
+@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+
+<MudPaper Class="p-4 mx-auto max-w-4xl" Elevation="4">
+    <MudText Typo="Typo.h5">Take-home Assignment #4 - Rubric Entry</MudText>
+    <MudForm @ref="rubricForm" OnValidSubmit="CalculateFinal">
+
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="student.FirstName" Label="First Name" Variant="Variant.Filled" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="student.LastName" Label="Last Name" Variant="Variant.Filled" />
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.h6">Rubric Checklist</MudText>
+
+        <MudExpansionPanels>
+            <MudExpansionPanel Text="OrderList Screen (5 points)">
+                <MudCheckBox T="bool" @bind-Checked="student.OrderListItems[0]" Label="Displays all orders including delivered ones" />
+                <MudCheckBox T="bool" @bind-Checked="student.OrderListItems[1]" Label="Orders sorted by Order ID (ascending)" />
+                <MudCheckBox T="bool" @bind-Checked="student.OrderListItems[2]" Label="Shows total orders and total picked orders" />
+                <MudCheckBox T="bool" @bind-Checked="student.OrderListItems[3]" Label="EditPick button disabled for delivered orders" />
+                <MudCheckBox T="bool" @bind-Checked="student.OrderListItems[4]" Label="Navigation to PickEdit works only for non-delivered orders" />
+                <MudNumericField @bind-Value="student.OrderListScore" Label="Score" Max="5" Min="0" Immediate="true" />
+                <MudTextField @bind-Value="student.OrderListComment" Label="Comments" Lines="2" />
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="PickEdit Screen (5 points)">
+                <MudCheckBox T="bool" @bind-Checked="student.PickEditItems[0]" Label="Picker dropdown is implemented and allows assignment" />
+                <MudCheckBox T="bool" @bind-Checked="student.PickEditItems[1]" Label="Picked quantity and pick issues can be updated" />
+                <MudCheckBox T="bool" @bind-Checked="student.PickEditItems[2]" Label="Dynamic button states (Save, Cancel/Close) based on changes" />
+                <MudCheckBox T="bool" @bind-Checked="student.PickEditItems[3]" Label="Delivery and reset buttons follow business rules and require confirmation" />
+                <MudCheckBox T="bool" @bind-Checked="student.PickEditItems[4]" Label="Pickers filtered by store" />
+                <MudNumericField @bind-Value="student.PickEditScore" Label="Score" Max="5" Min="0" Immediate="true" />
+                <MudTextField @bind-Value="student.PickEditComment" Label="Comments" Lines="2" />
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="Business Logic & Validation (5 points)">
+                <MudCheckBox T="bool" @bind-Checked="student.LogicItems[0]" Label="Validates picker is assigned" />
+                <MudCheckBox T="bool" @bind-Checked="student.LogicItems[1]" Label="Prevents editing delivered orders" />
+                <MudCheckBox T="bool" @bind-Checked="student.LogicItems[2]" Label="At least one item must have QtyPicked > 0" />
+                <MudCheckBox T="bool" @bind-Checked="student.LogicItems[3]" Label="QtyPicked ≤ QtyOrdered and ≥ 0" />
+                <MudCheckBox T="bool" @bind-Checked="student.LogicItems[4]" Label="Uses proper error messages for validation failures" />
+                <MudNumericField @bind-Value="student.BusinessLogicScore" Label="Score" Max="5" Min="0" Immediate="true" />
+                <MudTextField @bind-Value="student.BusinessLogicComment" Label="Comments" Lines="2" />
+            </MudExpansionPanel>
+
+            <MudExpansionPanel Text="Saving and Error Handling (5 points)">
+                <MudCheckBox T="bool" @bind-Checked="student.SavingItems[0]" Label="Confirmation dialogs on Save, Clear, and Cancel" />
+                <MudCheckBox T="bool" @bind-Checked="student.SavingItems[1]" Label="Displays feedback and error messages clearly" />
+                <MudCheckBox T="bool" @bind-Checked="student.SavingItems[2]" Label="Proper try/catch for save operations" />
+                <MudCheckBox T="bool" @bind-Checked="student.SavingItems[3]" Label="Prevents saving if validation fails" />
+                <MudCheckBox T="bool" @bind-Checked="student.SavingItems[4]" Label="Aggregate exceptions handled and shown" />
+                <MudNumericField @bind-Value="student.SavingErrorScore" Label="Score" Max="5" Min="0" Immediate="true" />
+                <MudTextField @bind-Value="student.SavingErrorComment" Label="Comments" Lines="2" />
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.h6">Total Score: @student.TotalScore / 20</MudText>
+        <MudText Typo="Typo.h6">Final Mark (Scaled to 5): @string.Format("{0:0.##}", student.ScaledMark) / 5</MudText>
+        <MudTextField @bind-Value="student.OverallComment" Label="Overall Comments" Lines="3" Class="my-2" />
+
+        <MudStack Row Class="mt-4" Spacing="2">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CalculateFinal">Calculate Final</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ClearForm">Clear</MudButton>
+        </MudStack>
+    </MudForm>
+</MudPaper>
+
+@code {
+    private MudForm rubricForm;
+
+    private StudentMark student = new();
+
+    private void CalculateFinal()
+    {
+        student.TotalScore = student.OrderListScore + student.PickEditScore + student.BusinessLogicScore + student.SavingErrorScore;
+        student.ScaledMark = student.TotalScore / 4.0;
+    }
+
+    private void ClearForm()
+    {
+        student = new();
+    }
+
+    public class StudentMark
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public double OrderListScore { get; set; }
+        public double PickEditScore { get; set; }
+        public double BusinessLogicScore { get; set; }
+        public double SavingErrorScore { get; set; }
+        public double TotalScore { get; set; }
+        public double ScaledMark { get; set; }
+
+        public string OrderListComment { get; set; } = string.Empty;
+        public string PickEditComment { get; set; } = string.Empty;
+        public string BusinessLogicComment { get; set; } = string.Empty;
+        public string SavingErrorComment { get; set; } = string.Empty;
+        public string OverallComment { get; set; } = string.Empty;
+
+        public bool[] OrderListItems { get; set; } = new bool[5];
+        public bool[] PickEditItems { get; set; } = new bool[5];
+        public bool[] LogicItems { get; set; } = new bool[5];
+        public bool[] SavingItems { get; set; } = new bool[5];
+    }
+}
